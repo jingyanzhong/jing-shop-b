@@ -11,7 +11,8 @@
       <div class="modal-content border-0">
         <div class="modal-header bg-dark text-white">
           <h5 class="modal-title" id="exampleModalLabel">
-            <span>新增產品</span>
+            <span v-if="isNew">新增產品</span>
+            <span v-else>編輯產品</span>
           </h5>
           <button
             type="button"
@@ -168,7 +169,13 @@
           <button type="button"
           class="btn btn-primary"
           @click="$emit('update-product',tempProduct)"
+          v-if="isNew"
           >確認</button>
+          <button type="button"
+          class="btn btn-primary"
+          @click="$emit('edit-product',tempProduct)"
+          v-else
+          >編輯</button>
         </div>
       </div>
     </div>
@@ -181,12 +188,15 @@ export default {
     product: {
       type: Object,
       default () { return {} }
+    },
+    isNew: {
+      type: Boolean,
+      default () { return true }
     }
   },
-  wathch: {
+  watch: {
     product () {
       this.tempProduct = this.product
-      this.tempProduct = {}
     }
   },
   data () {

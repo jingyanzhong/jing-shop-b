@@ -1,11 +1,13 @@
 <template>
     <div class="text-end">
         <button class="btn btn-primary" type="button"
-        @click="openModal">新增產品列表</button>
+        @click="openModal(true)">新增產品列表</button>
     </div>
   <modal ref="ProductModal"
   :product="tempProduct"
+  :is-new="isNew"
   @update-product="updateProduct"
+  @edit-product="editProduct"
   ></modal>
   <table class="table mt-4">
     <thead>
@@ -32,8 +34,8 @@
         </td>
         <td>
             <div class="btn-group">
-              <button class="btn btn-outline-primary btn-sm">編輯</button>
-              <button class="btn btn-outline-danger btn-sm">刪除</button>
+              <button class="btn btn-outline-primary btn-sm" @click="openModal(false, item)">編輯</button>
+              <button class="btn btn-outline-danger btn-sm" @click="deleteProduct(item)">刪除</button>
             </div>
         </td>
       </tr>
@@ -69,7 +71,8 @@ export default {
     return {
       products: [],
       pagination: {},
-      tempProduct: {}
+      tempProduct: {},
+      isNew: ''
     }
   },
   methods: {
@@ -81,8 +84,14 @@ export default {
         this.pagination = res.data.pagination
       })
     },
-    openModal () {
-      this.tempProduct = {}
+    openModal (isNew, item) {
+      console.log(isNew, item)
+      if (isNew) {
+        this.tempProduct = {}
+      } else {
+        this.tempProduct = { ...item }
+      }
+      this.isNew = isNew
       const productComponent = this.$refs.ProductModal
       productComponent.showModal()
     },
@@ -95,6 +104,26 @@ export default {
           console.log(res)
           productComponent.hideModal()
           productComponent.resetTempProduct()
+          this.getProducts()
+        })
+    },
+    editProduct (item) {
+      this.tempProduct = item
+      const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/product/${this.tempProduct.id}`
+      const productComponent = this.$refs.ProductModal
+      this.$http.put(api, { data: this.tempProduct })
+        .then((res) => {
+          console.log(res)
+          productComponent.hideModal()
+          productComponent.resetTempProduct()
+          this.getProducts()
+        })
+    },
+    deleteProduct (item) {
+      const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/product/${item.id}`
+      this.$http.delete(api)
+        .then((res) => {
+          console.log(res)
           this.getProducts()
         })
     }

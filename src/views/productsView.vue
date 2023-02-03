@@ -1,8 +1,11 @@
 <template>
+  <div class="d-flex align-items-center">
+    <h2 class="h5 me-auto mb-0">商品列表</h2>
     <div class="text-end">
         <button class="btn btn-primary" type="button"
-        @click="openModal(true)">新增產品列表</button>
+        @click="openModal(true)">新增商品</button>
     </div>
+  </div>
   <modal ref="ProductModal"
   :product="tempProduct"
   :is-new="isNew"
@@ -13,7 +16,7 @@
     <thead>
         <tr>
       <th width="120">分類</th>
-      <th>產品名稱</th>
+      <th>商品名稱</th>
       <th width="120">原價</th>
       <th width="120">售價</th>
       <th width="100">是否啟用</th>
@@ -27,15 +30,15 @@
         <td>{{ item.origin_price }}</td>
         <td>{{ item.price }}</td>
         <td v-if="item.is_enabled === 1">
-            <span class="text-success">啟用</span>
+          <i class="bi bi-toggle-on h4 text-success"></i>
         </td>
         <td v-else>
-            <span class="text-info">未啟用</span>
+          <i class="bi bi-toggle-off h4 text-info"></i>
         </td>
         <td>
             <div class="btn-group">
               <button class="btn btn-outline-primary btn-sm" @click="openModal(false, item)">編輯</button>
-              <button class="btn btn-outline-danger btn-sm" @click="deleteProduct(item)">刪除</button>
+              <button class="btn btn-outline-danger btn-sm" @click="openDeleteModal(item)">刪除</button>
             </div>
         </td>
       </tr>
@@ -59,13 +62,18 @@
     </li>
   </ul>
 </nav>
+<deleteModal ref="deleteModal"
+:delete="tempProduct"
+@delete-product="deleteProduct"
+></deleteModal>
 </template>
 
 <script>
 import modal from '@/components/ProductModal.vue'
+import deleteModal from '@/components/DeleteModal.vue'
 export default {
   components: {
-    modal
+    modal, deleteModal
   },
   data () {
     return {
@@ -79,13 +87,12 @@ export default {
     getProducts () {
       const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/products`
       this.$http.get(api).then((res) => {
-        console.log(res.data.products)
+        // console.log(res.data.products)
         this.products = res.data.products
         this.pagination = res.data.pagination
       })
     },
     openModal (isNew, item) {
-      console.log(isNew, item)
       if (isNew) {
         this.tempProduct = {}
       } else {
@@ -101,7 +108,6 @@ export default {
       const productComponent = this.$refs.ProductModal
       this.$http.post(api, { data: this.tempProduct })
         .then((res) => {
-          console.log(res)
           productComponent.hideModal()
           productComponent.resetTempProduct()
           this.getProducts()
@@ -113,17 +119,23 @@ export default {
       const productComponent = this.$refs.ProductModal
       this.$http.put(api, { data: this.tempProduct })
         .then((res) => {
-          console.log(res)
           productComponent.hideModal()
           productComponent.resetTempProduct()
           this.getProducts()
         })
     },
+    openDeleteModal (item) {
+      this.tempProduct = { ...item }
+      const deleteModalComponent = this.$refs.deleteModal
+      deleteModalComponent.showModal()
+    },
     deleteProduct (item) {
+      const deleteModalComponent = this.$refs.deleteModal
       const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/product/${item.id}`
       this.$http.delete(api)
         .then((res) => {
-          console.log(res)
+          deleteModalComponent.hideModal()
+          deleteModalComponent.resetTempProduct()
           this.getProducts()
         })
     }

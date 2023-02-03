@@ -9,10 +9,10 @@
   >
     <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content border-0">
-        <div class="modal-header bg-dark text-white">
+        <div class="modal-header bg-primary text-white">
           <h5 class="modal-title" id="exampleModalLabel">
-            <span v-if="isNew">新增產品</span>
-            <span v-else>編輯產品</span>
+            <span v-if="isNew">新增商品</span>
+            <span v-else>編輯商品</span>
           </h5>
           <button
             type="button"

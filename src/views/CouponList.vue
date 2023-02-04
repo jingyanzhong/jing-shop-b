@@ -12,46 +12,48 @@
     :couponList="tempCoupon"
     @update-coupon="updateCoupon"
   ></couponModal>
-  <table class="table mt-4">
-    <thead>
-      <tr>
-        <th>優惠券名稱</th>
-        <th width="120">優惠碼</th>
-        <th width="120">優惠價</th>
-        <th width="200">到期日</th>
-        <th width="100">是否啟用</th>
-        <th width="200">編輯</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="item in coupons" :key="item.id">
-        <td>{{ item.title }}</td>
-        <td>{{ item.code }}</td>
-        <td>{{ item.percent }}</td>
-        <td>{{ UnixTimestamp (item.due_date) }}</td>
-        <td v-if="item.is_enabled === 1">
-          <i class="bi bi-toggle-on h4 text-success"></i>
-        </td>
-        <td v-else>
-          <i class="bi bi-toggle-off h4 text-info"></i>
-        </td>
-        <td>
-          <div class="btn-group">
-            <button
-              class="btn btn-outline-primary btn-sm"
-            >
-              編輯
-            </button>
-            <button
-              class="btn btn-outline-danger btn-sm"
-            >
-              刪除
-            </button>
-          </div>
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <div class="text-nowrap overflow-x-scroll">
+    <table class="table mt-4">
+      <thead>
+        <tr>
+          <th>優惠券名稱</th>
+          <th width="120">優惠碼</th>
+          <th width="120">優惠價</th>
+          <th width="200">到期日</th>
+          <th width="100">是否啟用</th>
+          <th width="200">編輯</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="item in coupons" :key="item.id">
+          <td>{{ item.title }}</td>
+          <td>{{ item.code }}</td>
+          <td>{{ item.percent }}</td>
+          <td>{{ UnixTimestamp (item.due_date) }}</td>
+          <td v-if="item.is_enabled === 1">
+            <i class="bi bi-toggle-on h4 text-success"></i>
+          </td>
+          <td v-else>
+            <i class="bi bi-toggle-off h4 text-info"></i>
+          </td>
+          <td>
+            <div class="btn-group">
+              <button
+                class="btn btn-outline-primary btn-sm"
+              >
+                編輯
+              </button>
+              <button
+                class="btn btn-outline-danger btn-sm"
+              >
+                刪除
+              </button>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
   <nav aria-label="Page navigation">
     <ul class="pagination justify-content-center">
       <li class="page-item">

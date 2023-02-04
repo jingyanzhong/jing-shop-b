@@ -7,7 +7,7 @@
     tabindex="-1"
     aria-labelledby="staticBackdropLabel"
     aria-hidden="true"
-    ref="deleteModal"
+    ref="Modal"
   >
     <div class="modal-dialog">
       <div class="modal-content">
@@ -38,7 +38,7 @@
   </div>
 </template>
 <script>
-import Modal from 'bootstrap/js/dist/modal'
+import modalMixin from '@/mixins/modalMixin'
 export default {
   props: {
     delete: {
@@ -57,19 +57,6 @@ export default {
       tempProduct: {}
     }
   },
-  methods: {
-    showModal () {
-      this.modal.show()
-    },
-    hideModal () {
-      this.modal.hide()
-    },
-    resetTempProduct () {
-      this.tempProduct = {}
-    }
-  },
-  mounted () {
-    this.modal = new Modal(this.$refs.deleteModal)
-  }
+  mixins: [modalMixin]
 }
 </script>

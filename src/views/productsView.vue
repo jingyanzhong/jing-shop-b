@@ -12,39 +12,43 @@
   @update-product="updateProduct"
   @edit-product="editProduct"
   ></modal>
-  <table class="table mt-4">
-    <thead>
-        <tr>
-      <th width="120">分類</th>
-      <th>商品名稱</th>
-      <th width="120">原價</th>
-      <th width="120">售價</th>
-      <th width="100">是否啟用</th>
-      <th width="200">編輯</th>
-    </tr>
-    </thead>
-    <tbody>
-        <tr v-for="item in products" :key="item.id">
-        <td>{{ item.category }}</td>
-        <td>{{ item.title }}</td>
-        <td>{{ item.origin_price }}</td>
-        <td>{{ item.price }}</td>
-        <td v-if="item.is_enabled === 1">
-          <i class="bi bi-toggle-on h4 text-success"></i>
-        </td>
-        <td v-else>
-          <i class="bi bi-toggle-off h4 text-info"></i>
-        </td>
-        <td>
-            <div class="btn-group">
-              <button class="btn btn-outline-primary btn-sm" @click="openModal(false, item)">編輯</button>
-              <button class="btn btn-outline-danger btn-sm" @click="openDeleteModal(item)">刪除</button>
-            </div>
-        </td>
+  <div class="text-nowrap overflow-x-scroll">
+    <table class="table mt-4">
+      <thead>
+          <tr>
+        <th width="120">分類</th>
+        <th>商品名稱</th>
+        <th width="120">原價</th>
+        <th width="120">售價</th>
+        <th width="100">是否啟用</th>
+        <th width="200">編輯</th>
       </tr>
-    </tbody>
-  </table>
-  <nav aria-label="Page navigation">
+      </thead>
+      <tbody>
+          <tr v-for="item in products" :key="item.id">
+          <td>{{ item.category }}</td>
+          <td>{{ item.title }}</td>
+          <td>{{ item.origin_price }}</td>
+          <td>{{ item.price }}</td>
+          <td v-if="item.is_enabled === 1">
+            <i class="bi bi-toggle-on h4 text-success"></i>
+          </td>
+          <td v-else>
+            <i class="bi bi-toggle-off h4 text-info"></i>
+          </td>
+          <td>
+              <div class="btn-group">
+                <button class="btn btn-outline-primary btn-sm" @click="openModal(false, item)">編輯</button>
+                <button class="btn btn-outline-danger btn-sm" @click="openDeleteModal(item)">刪除</button>
+              </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <pagination :page="pagination"
+  @get-products="getProducts"></pagination>
+  <!-- <nav aria-label="Page navigation">
   <ul class="pagination justify-content-center">
     <li class="page-item">
       <a class="page-link" href="#" aria-label="Previous">
@@ -61,7 +65,7 @@
       </a>
     </li>
   </ul>
-</nav>
+</nav> -->
 <deleteModal ref="deleteModal"
 :delete="tempProduct"
 @delete-product="deleteProduct"
@@ -71,9 +75,10 @@
 <script>
 import modal from '@/components/ProductModal.vue'
 import deleteModal from '@/components/DeleteModal.vue'
+import pagination from '@/components/PaginationComponent.vue'
 export default {
   components: {
-    modal, deleteModal
+    modal, deleteModal, pagination
   },
   data () {
     return {
@@ -84,8 +89,8 @@ export default {
     }
   },
   methods: {
-    getProducts () {
-      const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/products`
+    getProducts (page) {
+      const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/products?page=${page}`
       this.$http.get(api).then((res) => {
         // console.log(res.data.products)
         this.products = res.data.products
@@ -141,7 +146,7 @@ export default {
     }
   },
   created () {
-    this.getProducts()
+    this.getProducts(1)
   }
 }
 </script>

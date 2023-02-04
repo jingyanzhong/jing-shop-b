@@ -1,10 +1,11 @@
 <template>
   <div class="vh-100 bg-light">
-    <div class="row mx-5 py-5">
-      <div class="col col-md-2 py-5">
+    <div class="row mx-lg-5 py-lg-5 py-3 bg-light">
+      <div class="col-lg-3 py-lg-5 py-3">
         <Narbar></Narbar>
+        <hr class="d-lg-none">
       </div>
-      <div class="col col-md-10 border-start">
+      <div class="col-lg-9 border-start py-lg-3">
         <div class="container-fluid">
           <router-view />
         </div>

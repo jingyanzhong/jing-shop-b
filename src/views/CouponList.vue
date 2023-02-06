@@ -1,4 +1,5 @@
 <template>
+  <LoadingComponent :active="isLoading"></LoadingComponent>
   <div class="d-flex align-items-center">
     <h2 class="h5 me-auto mb-0">優惠券設定</h2>
     <div class="text-end">
@@ -84,14 +85,17 @@ export default {
       coupons: {},
       pagination: {},
       tempCoupon: {},
-      isNew: ''
+      isNew: '',
+      isLoading: false
     }
   },
   methods: {
     getCoupon () {
       const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/coupons`
+      this.isLoading = true
       this.$http.get(api).then((res) => {
         console.log(res.data)
+        this.isLoading = false
         this.coupons = res.data.coupons
         this.pagination = res.data.pagination
       })
@@ -123,8 +127,7 @@ export default {
     },
     UnixTimestamp (time) {
       const date = new Date(time * 1000)
-      const newData = `${date.getFullYear()}-${date.getMonth() > 9 ? date.getMonth() : `0${date.getMonth()}`}-${date.getDate() > 10 ? date.getDate() : `0${date.getDate()}`}`
-      return newData
+      return date.toLocaleDateString()
     }
   },
   created () {

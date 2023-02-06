@@ -1,4 +1,5 @@
 <template>
+  <LoadingComponent :active="isLoading"></LoadingComponent>
   <div class="d-flex align-items-center">
     <h2 class="h5 me-auto mb-0">商品列表</h2>
     <div class="text-end">
@@ -85,14 +86,17 @@ export default {
       products: [],
       pagination: {},
       tempProduct: {},
-      isNew: ''
+      isNew: '',
+      isLoading: false
     }
   },
   methods: {
     getProducts (page) {
       const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/products?page=${page}`
+      this.isLoading = true
       this.$http.get(api).then((res) => {
         // console.log(res.data.products)
+        this.isLoading = false
         this.products = res.data.products
         this.pagination = res.data.pagination
       })

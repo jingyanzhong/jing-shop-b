@@ -39,7 +39,13 @@
                   >或 上傳圖片
                   <i class="fas fa-spinner fa-spin"></i>
                 </label>
-                <input type="file" id="customFile" class="form-control" />
+                <input
+                type="file"
+                id="customFile"
+                class="form-control"
+                ref="fileInput"
+                @change="uploadFile"
+                />
               </div>
               <img class="img-fluid" :src="tempProduct.imgUrl" alt="" />
               <!-- 延伸技巧，多圖 -->
@@ -203,6 +209,21 @@ export default {
     return {
       modal: {},
       tempProduct: {}
+    }
+  },
+  methods: {
+    uploadFile () {
+      const uploadedFile = this.$refs.fileInput.files[0]
+      const formData = new FormData()
+      formData.append('file-to-upload', uploadedFile)
+      const url = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/upload`
+      this.$http.post(url, formData)
+        .then(res => {
+          console.log(res.data)
+          if (res.data.success) {
+            this.tempProduct.imgUrl = res.data.imageUrl
+          }
+        })
     }
   },
   mixins: [modalMixin]

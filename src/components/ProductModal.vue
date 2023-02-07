@@ -47,21 +47,23 @@
                 @change="uploadFile"
                 />
               </div>
-              <img class="img-fluid" :src="tempProduct.imgUrl" alt="" />
               <!-- 延伸技巧，多圖 -->
-              <div class="mt-5">
-                <div class="mb-3 input-group">
+              <div class="mt-5" v-if="tempProduct.images">
+                <div class="mb-3 input-group" v-for="(img, key) in tempProduct.images" :key="key">
+                  <img class="img-fluid" :src="img" alt="" />
                   <input
                     type="url"
                     class="form-control form-control"
                     placeholder="請輸入連結"
+                    v-model="tempProduct.images[key]"
                   />
-                  <button type="button" class="btn btn-outline-danger">
+                  <button type="button" class="btn btn-outline-danger" @click="tempProduct.images.splice(key, 1)">
                     移除
                   </button>
                 </div>
-                <div>
-                  <button class="btn btn-outline-primary btn-sm d-block w-100">
+                <div v-if="
+                    tempProduct.images[tempProduct.images.length - 1] || !tempProduct.images.length">
+                  <button class="btn btn-outline-primary btn-sm d-block w-100" @click="tempProduct.images.push('')">
                     新增圖片
                   </button>
                 </div>
@@ -185,6 +187,7 @@
         </div>
       </div>
     </div>
+    <LoadingComponent :active="isLoading"></LoadingComponent>
   </div>
 </template>
 <script>
@@ -203,12 +206,16 @@ export default {
   watch: {
     product () {
       this.tempProduct = this.product
+      if (!this.tempProduct.images) {
+        this.tempProduct.images = []
+      }
     }
   },
   data () {
     return {
       modal: {},
-      tempProduct: {}
+      tempProduct: {},
+      isLoading: false
     }
   },
   methods: {
@@ -217,11 +224,14 @@ export default {
       const formData = new FormData()
       formData.append('file-to-upload', uploadedFile)
       const url = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/upload`
+      this.isLoading = true
       this.$http.post(url, formData)
         .then(res => {
+          this.isLoading = false
           console.log(res.data)
           if (res.data.success) {
-            this.tempProduct.imgUrl = res.data.imageUrl
+            this.tempProduct.images.push(res.data.imageUrl)
+            this.$refs.fileInput.value = ''
           }
         })
     }

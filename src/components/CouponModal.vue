@@ -11,8 +11,8 @@
       <div class="modal-content border-0">
         <div class="modal-header bg-primary text-white">
           <h5 class="modal-title" id="exampleModalLabel">
-            <span>新增優惠券</span>
-            <!-- <span v-else>編輯優惠券</span> -->
+            <span v-if="isNew">新增優惠券</span>
+            <span v-else>編輯優惠券</span>
           </h5>
           <button
             type="button"
@@ -34,13 +34,13 @@
           </div>
           <div class="row gx-2">
             <div class="mb-3 col-md-6">
-              <label for="percent" class="form-label">折扣金額</label>
+              <label for="percent" class="form-label">折扣金額(%)</label>
               <input
                 type="text"
                 class="form-control"
                 id="percent"
                 v-model.number="tempCoupon.percent"
-                placeholder="請輸入折扣金額"
+                placeholder="請輸入折扣金額(%)"
               />
             </div>
             <div class="mb-3 col-md-6">
@@ -87,13 +87,17 @@
           >
             取消
           </button>
-          <button type="button" class="btn btn-primary" @click="$emit('update-coupon',tempCoupon)">確認</button>
-          <!-- <button
+          <button type="button" class="btn btn-primary"
+          v-if="isNew"
+          @click="$emit('update-coupon',tempCoupon)">確認</button>
+          <button
             type="button"
             class="btn btn-primary"
+            v-else
+            @click="$emit('edit-coupon',tempCoupon)"
           >
             編輯
-          </button> -->
+          </button>
         </div>
       </div>
     </div>
@@ -116,12 +120,17 @@ export default {
   watch: {
     couponList () {
       this.tempCoupon = this.couponList
+      if (this.tempCoupon.due_date) {
+        const dateAndTime = new Date(this.tempCoupon.due_date * 1000).toISOString().split('T')
+        this.tempCoupon.due_date = dateAndTime[0]
+      }
     }
   },
   data () {
     return {
       modal: {},
-      tempCoupon: {}
+      tempCoupon: {},
+      due_date: ''
     }
   },
   methods: {

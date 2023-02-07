@@ -11,7 +11,9 @@
   <couponModal
     ref="couponModal"
     :couponList="tempCoupon"
+    :is-new="isNew"
     @update-coupon="updateCoupon"
+    @edit-coupon="editCoupon"
   ></couponModal>
   <div class="text-nowrap overflow-x-scroll">
     <table class="table mt-4">
@@ -29,8 +31,8 @@
         <tr v-for="item in coupons" :key="item.id">
           <td>{{ item.title }}</td>
           <td>{{ item.code }}</td>
-          <td>{{ item.percent }}</td>
-          <td>{{ UnixTimestamp (item.due_date) }}</td>
+          <td>{{ item.percent }} %</td>
+          <td>{{ date(item.due_date) }}</td>
           <td v-if="item.is_enabled === 1">
             <i class="bi bi-toggle-on h4 text-success"></i>
           </td>
@@ -41,11 +43,13 @@
             <div class="btn-group">
               <button
                 class="btn btn-outline-primary btn-sm"
+                @click="openModal(false, item)"
               >
                 編輯
               </button>
               <button
                 class="btn btn-outline-danger btn-sm"
+                @click="openDeleteModal(item)"
               >
                 刪除
               </button>
@@ -72,14 +76,22 @@
       </li>
     </ul>
   </nav>
+  <deleteModal
+  ref="deleteModal"
+  :delete="tempCoupon"
+  @delete-product="deleteProduct"
+  ></deleteModal>
 </template>
 
 <script>
+import deleteModal from '@/components/DeleteModal.vue'
 import couponModal from '@/components/CouponModal.vue'
+import { date } from '@/methods/filters'
 export default {
   components: {
-    couponModal
+    couponModal, deleteModal
   },
+  inject: ['emitter'],
   data () {
     return {
       coupons: {},
@@ -90,6 +102,7 @@ export default {
     }
   },
   methods: {
+    date,
     getCoupon () {
       const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/coupons`
       this.isLoading = true
@@ -112,7 +125,7 @@ export default {
     },
     updateCoupon (item) {
       const list = item
-      const time = Math.round(new Date(list.due_date).getTime() / 1000)
+      const time = Math.floor(new Date(list.due_date) / 1000)
       list.due_date = time
       this.tempCoupon = list
       console.log(this.tempCoupon)
@@ -125,9 +138,47 @@ export default {
         this.getCoupon()
       })
     },
-    UnixTimestamp (time) {
-      const date = new Date(time * 1000)
-      return date.toLocaleDateString()
+    editCoupon (item) {
+      const list = item
+      const time = Math.floor(new Date(list.due_date) / 1000)
+      list.due_date = time
+      this.tempCoupon = list
+      const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/coupon/${this.tempCoupon.id}`
+      const couponComponent = this.$refs.couponModal
+      this.$http.put(api, { data: this.tempCoupon })
+        .then((res) => {
+          couponComponent.hideModal()
+          if (res.data.success) {
+            this.getCoupon()
+            this.emitter.emit('push-message', {
+              style: 'success',
+              title: '更新成功'
+            })
+          } else {
+            this.emitter.emit('push-message', {
+              style: 'danger',
+              title: '更新失敗',
+              content: res.data.message.join('、')
+            })
+          }
+          couponComponent.resetTempCoupon()
+        })
+    },
+    openDeleteModal (item) {
+      this.tempCoupon = { ...item }
+      const deleteModalComponent = this.$refs.deleteModal
+      deleteModalComponent.showModal()
+    },
+    deleteProduct (item) {
+      console.log(item)
+      const deleteModalComponent = this.$refs.deleteModal
+      const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/coupon/${item.id}`
+      this.$http.delete(api)
+        .then((res) => {
+          deleteModalComponent.hideModal()
+          deleteModalComponent.resetTempProduct()
+          this.getCoupon()
+        })
     }
   },
   created () {

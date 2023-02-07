@@ -12,7 +12,7 @@
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h1 class="modal-title fs-5" id="staticBackdropLabel">刪除商品警告</h1>
+          <h1 class="modal-title fs-5" id="staticBackdropLabel">刪除「{{ tempProduct.title }}」警告</h1>
           <button
             type="button"
             class="btn-close"
@@ -20,7 +20,7 @@
             aria-label="Close"
           ></button>
         </div>
-        <div class="modal-body">是否確定要刪除該商品?</div>
+        <div class="modal-body">是否確定要刪除「{{ tempProduct.title }}」?<br>刪除後商品將無法復原，請謹慎操作。</div>
         <div class="modal-footer">
           <button
             type="button"

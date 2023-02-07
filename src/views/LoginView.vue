@@ -13,8 +13,8 @@
             <label
               for="inputEmail"
               class="sr-only input-group-text rounded-start-pill bg-info text-white"
-              ><i class="bi bi-person-fill"></i></label
-            >
+              ><i class="bi bi-person-fill"></i
+            ></label>
             <input
               type="email"
               id="inputEmail"
@@ -29,8 +29,8 @@
             <label
               for="inputPassword"
               class="sr-only input-group-text rounded-start-pill bg-info text-white"
-              ><i class="bi bi-key-fill"></i></label
-            >
+              ><i class="bi bi-key-fill"></i
+            ></label>
             <input
               type="password"
               id="inputPassword"

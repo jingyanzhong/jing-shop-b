@@ -29,8 +29,8 @@
           <tr v-for="item in products" :key="item.id">
           <td>{{ item.category }}</td>
           <td>{{ item.title }}</td>
-          <td>{{ item.origin_price }}</td>
-          <td>{{ item.price }}</td>
+          <td>{{ currency(item.origin_price) }}</td>
+          <td>{{ currency(item.price) }}</td>
           <td v-if="item.is_enabled === 1">
             <i class="bi bi-toggle-on h4 text-success"></i>
           </td>
@@ -77,10 +77,12 @@
 import modal from '@/components/ProductModal.vue'
 import deleteModal from '@/components/DeleteModal.vue'
 import pagination from '@/components/PaginationComponent.vue'
+import { currency } from '@/methods/filters'
 export default {
   components: {
     modal, deleteModal, pagination
   },
+  inject: ['emitter'],
   data () {
     return {
       products: [],
@@ -91,7 +93,8 @@ export default {
     }
   },
   methods: {
-    getProducts (page) {
+    currency,
+    getProducts (page = 1) {
       const api = `${process.env.VUE_APP_API}api/${process.env.VUE_APP_PATH}/admin/products?page=${page}`
       this.isLoading = true
       this.$http.get(api).then((res) => {
@@ -118,8 +121,20 @@ export default {
       this.$http.post(api, { data: this.tempProduct })
         .then((res) => {
           productComponent.hideModal()
+          if (res.data.success) {
+            this.getProducts()
+            this.emitter.emit('push-message', {
+              style: 'success',
+              title: '更新成功'
+            })
+          } else {
+            this.emitter.emit('push-message', {
+              style: 'danger',
+              title: '更新失敗',
+              content: res.data.message.join('、')
+            })
+          }
           productComponent.resetTempProduct()
-          this.getProducts()
         })
     },
     editProduct (item) {
@@ -129,12 +144,25 @@ export default {
       this.$http.put(api, { data: this.tempProduct })
         .then((res) => {
           productComponent.hideModal()
+          if (res.data.success) {
+            this.getProducts()
+            this.emitter.emit('push-message', {
+              style: 'success',
+              title: '更新成功'
+            })
+          } else {
+            this.emitter.emit('push-message', {
+              style: 'danger',
+              title: '更新失敗',
+              content: res.data.message.join('、')
+            })
+          }
           productComponent.resetTempProduct()
-          this.getProducts()
         })
     },
     openDeleteModal (item) {
       this.tempProduct = { ...item }
+      console.log(this.tempProduct)
       const deleteModalComponent = this.$refs.deleteModal
       deleteModalComponent.showModal()
     },
@@ -150,7 +178,7 @@ export default {
     }
   },
   created () {
-    this.getProducts(1)
+    this.getProducts()
   }
 }
 </script>

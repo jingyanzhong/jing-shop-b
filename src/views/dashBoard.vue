@@ -1,5 +1,6 @@
 <template>
-  <div class="vh-100 bg-light">
+  <div class="vh-100 bg-light position-relative">
+    <ToastMessage></ToastMessage>
     <div class="row mx-lg-5 py-lg-5 py-3 bg-light">
       <div class="col-lg-3 py-lg-5 py-3">
         <Narbar></Narbar>
@@ -14,10 +15,17 @@
   </div>
 </template>
 <script>
+import emitter from '@/methods/emitter'
+import ToastMessage from '@/components/ToastMessages.vue'
 import Narbar from '@/components/NavBar.vue'
 export default {
   components: {
-    Narbar
+    Narbar, ToastMessage
+  },
+  provide () {
+    return {
+      emitter
+    }
   },
   created () {
     const cookieValue = document.cookie
@@ -29,6 +37,11 @@ export default {
     this.$http.post(api).then((res) => {
       if (!res.data.success) {
         this.$router.push('/login')
+      } else {
+        emitter.emit('push-message', {
+          style: 'success',
+          title: '登入成功'
+        })
       }
     })
   }

@@ -47,6 +47,7 @@
                 @change="uploadFile"
                 />
               </div>
+              <img class="img-fluid" :src="tempProduct.imgUrl" alt="" />
               <!-- 延伸技巧，多圖 -->
               <div class="mt-5" v-if="tempProduct.images">
                 <div class="mb-3 input-group" v-for="(img, key) in tempProduct.images" :key="key">
@@ -230,7 +231,8 @@ export default {
           this.isLoading = false
           console.log(res.data)
           if (res.data.success) {
-            this.tempProduct.images.push(res.data.imageUrl)
+            this.tempProduct.imgUrl = res.data.imageUrl
+            // this.tempProduct.images.push(res.data.imageUrl)
             this.$refs.fileInput.value = ''
           }
         })
